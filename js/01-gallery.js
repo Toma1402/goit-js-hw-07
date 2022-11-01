@@ -4,7 +4,7 @@ import { galleryItems } from "./gallery-items.js";
 console.log(galleryItems);
 
 const galleryRef = document.querySelector(".gallery");
-console.log(galleryRef);
+
 const markup = galleryItems
   .map(
     ({ preview, original, description }) => `<div class="gallery__item">
@@ -29,14 +29,21 @@ function inModal(evt) {
     return;
   }
 
-  const instance =
-    basicLightbox.create(`<img width="1400" height="900" src="${evt.target.dataset.source}">
-	`);
-
+  const instance = basicLightbox.create(
+    `<img src=${evt.target.dataset.source} alt=${evt.target.alt}/>`,
+    {
+      onShow: (instance) => {
+        galleryRef.addEventListener("keydown", onEscape);
+      },
+      onClose: (instance) => {
+        galleryRef.removeEventListener("keydown", onEscape);
+      },
+    }
+  );
   instance.show();
-  galleryRef.addEventListener("keydown", (evt) => {
-    if (evt.code === "Escape") {
+  function onEscape(event) {
+    if (event.code === "Escape") {
       instance.close();
     }
-  });
+  }
 }
